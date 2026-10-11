@@ -42,7 +42,7 @@ The executable is `target/release/prosit`; put it on the agent runtime's PATH. U
 
 ### 2. Prepare the user's account
 
-Have the user open the server website. They need a signup invitation from the operator or an existing account; the agent must not create an administrator or bypass invitation requirements. In **Security**, have them create an encryption identity or import their existing recovery bundle. They must keep the recovery file and a separate vault passphrase safe. Login password recovery cannot recover lost encryption keys.
+Have the user open the server website. They need a signup invitation from the operator or an existing account; the agent must not create an administrator or bypass invitation requirements. Have them create or use a passkey to sign in and unlock their server-hosted encrypted vault. In **Security**, add a backup passkey. Existing users can switch their old vault to passkeys there; one-time legacy import may be necessary on a new browser. Do not ask users to move JSON files during normal use. Browser passkeys do not replace the CLI's own locally managed device vault or unattended unlock mechanism.
 
 ### 3. Connect with a browser verification code
 

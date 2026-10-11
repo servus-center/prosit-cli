@@ -197,26 +197,17 @@
     "/api/v1/auth/register": {
       "post": {
         "operationId": "post_api_v1_auth_register",
-        "summary": "Redeem one single-use seven-day administrator invitation",
-        "description": "Redeem one single-use seven-day administrator invitation",
+        "summary": "Retired password signup; use passkey enrollment",
+        "description": "Retired password signup; use passkey enrollment",
         "security": [],
         "x-required-access": "public",
         "responses": {
-          "200": {
+          "410": {
             "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "id"
-                  ],
-                  "additionalProperties": false
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -258,6 +249,749 @@
             "description": "Required CSRF guard. Browser Origin must equal the configured origin."
           }
         ]
+      }
+    },
+    "/api/v1/auth/passkeys/enroll": {
+      "post": {
+        "operationId": "post_api_v1_auth_passkeys_enroll",
+        "summary": "Start invited signup, operator enrollment, legacy conversion, or adding a backup passkey",
+        "description": "Supply invitation+username or operator bootstrap capability for signup; otherwise a web session is required. Legacy users must reauthenticate with their password. Passkey users require recent verification. New accounts remain pending until confirmation.",
+        "security": [],
+        "x-required-access": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "flow": {
+                      "type": "string"
+                    },
+                    "options": {
+                      "type": "object"
+                    },
+                    "user_id": {
+                      "type": "string"
+                    },
+                    "username": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "flow",
+                    "options",
+                    "user_id",
+                    "username"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasskeyEnrollment"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/passkeys/register": {
+      "post": {
+        "operationId": "post_api_v1_auth_passkeys_register",
+        "summary": "Verify registration and request a PRF authentication",
+        "description": "Verify registration and request a PRF authentication",
+        "security": [],
+        "x-required-access": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "options": {
+                      "type": "object"
+                    },
+                    "credential_id": {
+                      "type": "string"
+                    },
+                    "prf_salt": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "options",
+                    "credential_id",
+                    "prf_salt"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "flow": {
+                    "type": "string"
+                  },
+                  "credential": {
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "flow",
+                  "credential"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/passkeys/stage": {
+      "post": {
+        "operationId": "post_api_v1_auth_passkeys_stage",
+        "summary": "Verify assertion and stage encrypted vault for independent recovery test",
+        "description": "Verify assertion and stage encrypted vault for independent recovery test",
+        "security": [],
+        "x-required-access": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "options": {
+                      "type": "object"
+                    },
+                    "vault": {
+                      "$ref": "#/components/schemas/BrowserVault"
+                    },
+                    "wrapped_key": {
+                      "$ref": "#/components/schemas/WrappedVaultKey"
+                    },
+                    "binding": {
+                      "$ref": "#/components/schemas/VaultBinding"
+                    }
+                  },
+                  "required": [
+                    "options",
+                    "vault",
+                    "wrapped_key",
+                    "binding"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "flow": {
+                    "type": "string"
+                  },
+                  "credential": {
+                    "type": "object"
+                  },
+                  "identity": {
+                    "$ref": "#/components/schemas/SignedIdentity"
+                  },
+                  "directory": {
+                    "$ref": "#/components/schemas/SignedDirectory"
+                  },
+                  "vault": {
+                    "$ref": "#/components/schemas/BrowserVault"
+                  },
+                  "wrapped_key": {
+                    "$ref": "#/components/schemas/WrappedVaultKey"
+                  }
+                },
+                "required": [
+                  "flow",
+                  "credential",
+                  "identity",
+                  "directory",
+                  "vault",
+                  "wrapped_key"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/passkeys/confirm": {
+      "post": {
+        "operationId": "post_api_v1_auth_passkeys_confirm",
+        "summary": "Verify fresh assertion and root-signed vault confirmation; activate passkey and issue session",
+        "description": "Verify fresh assertion and root-signed vault confirmation; activate passkey and issue session",
+        "security": [],
+        "x-required-access": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "flow": {
+                    "type": "string"
+                  },
+                  "credential": {
+                    "type": "object"
+                  },
+                  "proof": {
+                    "$ref": "#/components/schemas/SignedVaultBinding"
+                  }
+                },
+                "required": [
+                  "flow",
+                  "credential",
+                  "proof"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/passkeys/login/start": {
+      "post": {
+        "operationId": "post_api_v1_auth_passkeys_login_start",
+        "summary": "Request passkey authentication with per-credential PRF inputs",
+        "description": "Request passkey authentication with per-credential PRF inputs",
+        "security": [],
+        "x-required-access": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "flow": {
+                      "type": "string"
+                    },
+                    "options": {
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "flow",
+                    "options"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "username"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/passkeys/login/finish": {
+      "post": {
+        "operationId": "post_api_v1_auth_passkeys_login_finish",
+        "summary": "Verify one-use assertion and issue a 12-hour browser session",
+        "description": "Verify one-use assertion and issue a 12-hour browser session",
+        "security": [],
+        "x-required-access": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "flow": {
+                    "type": "string"
+                  },
+                  "credential": {
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "flow",
+                  "credential"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/me/vault/{id}": {
+      "get": {
+        "operationId": "get_api_v1_me_vault__id_",
+        "summary": "Get own encrypted vault and the selected passkey key wrap",
+        "description": "Get own encrypted vault and the selected passkey key wrap",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "vault": {
+                      "$ref": "#/components/schemas/BrowserVault"
+                    },
+                    "wrapped_key": {
+                      "$ref": "#/components/schemas/WrappedVaultKey"
+                    }
+                  },
+                  "required": [
+                    "vault",
+                    "wrapped_key"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/me/passkeys": {
+      "get": {
+        "operationId": "get_api_v1_me_passkeys",
+        "summary": "List own passkeys",
+        "description": "List own passkeys",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "integer",
+                        "format": "int64"
+                      },
+                      "last_used": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "format": "int64"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "created_at",
+                      "last_used"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/passkeys/{id}": {
+      "delete": {
+        "operationId": "delete_api_v1_me_passkeys__id_",
+        "summary": "Revoke passkey and associated sessions; refuses last passkey; requires recent verification",
+        "description": "Revoke passkey and associated sessions; refuses last passkey; requires recent verification",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/passkey-migration": {
+      "get": {
+        "operationId": "get_api_v1_admin_passkey_migration",
+        "summary": "Temporary conversion progress counts",
+        "description": "Temporary conversion progress counts",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "legacy": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "passkey": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "pending": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  },
+                  "required": [
+                    "legacy",
+                    "passkey",
+                    "pending"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/auth/logout": {
@@ -387,7 +1121,14 @@
                 "type": "object",
                 "properties": {
                   "password": {
-                    "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
                   "confirm_username": {
                     "type": "string"
@@ -744,6 +1485,9 @@
                       "disabled": {
                         "type": "boolean"
                       },
+                      "auth_mode": {
+                        "type": "string"
+                      },
                       "created_at": {
                         "type": "integer",
                         "format": "int64"
@@ -754,6 +1498,7 @@
                       "username",
                       "role",
                       "disabled",
+                      "auth_mode",
                       "created_at"
                     ],
                     "additionalProperties": false
@@ -3709,6 +4454,12 @@
           "paused": {
             "type": "boolean"
           },
+          "auth_mode": {
+            "enum": [
+              "legacy",
+              "passkey"
+            ]
+          },
           "identity": {
             "anyOf": [
               {
@@ -3736,6 +4487,7 @@
           "role",
           "disabled",
           "paused",
+          "auth_mode",
           "identity",
           "directory"
         ],
@@ -4379,6 +5131,147 @@
             "additionalProperties": false
           }
         ]
+      },
+      "BrowserVault": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 2
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "fingerprint": {
+            "type": "string"
+          },
+          "revision": {
+            "const": 1
+          },
+          "blob": {
+            "$ref": "#/components/schemas/CipherBlob"
+          }
+        },
+        "required": [
+          "version",
+          "user_id",
+          "fingerprint",
+          "revision",
+          "blob"
+        ],
+        "additionalProperties": false
+      },
+      "WrappedVaultKey": {
+        "type": "object",
+        "properties": {
+          "prf_salt": {
+            "type": "string"
+          },
+          "blob": {
+            "$ref": "#/components/schemas/CipherBlob"
+          }
+        },
+        "required": [
+          "prf_salt",
+          "blob"
+        ],
+        "additionalProperties": false
+      },
+      "VaultBinding": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "flow_id": {
+            "type": "string"
+          },
+          "credential_id": {
+            "type": "string"
+          },
+          "vault_hash": {
+            "type": "string"
+          },
+          "wrap_hash": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "flow_id",
+          "credential_id",
+          "vault_hash",
+          "wrap_hash"
+        ],
+        "additionalProperties": false
+      },
+      "SignedVaultBinding": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/VaultBinding"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "data",
+          "signature"
+        ],
+        "additionalProperties": false
+      },
+      "PasskeyEnrollment": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bootstrap": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "password": {
+            "anyOf": [
+              {
+                "type": "string",
+                "writeOnly": true
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
       }
     }
   }

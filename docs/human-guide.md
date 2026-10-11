@@ -16,16 +16,16 @@ prosit --version
 
 Read the script before executing it. It downloads the matching archive from [public CLI releases](https://github.com/servus-center/prosit-cli/releases), verifies the SHA-256 checksum, and installs `prosit` to `~/.local/bin`. Add that directory to your shell’s PATH permanently if needed. You can download and check an archive manually from the same release page.
 
-To pin a release, run `PROSIT_VERSION=v0.2.1 sh /tmp/install-prosit.sh`. To choose the install directory, set `PROSIT_INSTALL_DIR`. Run as your normal user; sudo is not needed. Checksums detect damaged or mismatched downloads, using GitHub as the trusted source for both files.
+To pin a release, run `PROSIT_VERSION=v0.3.0 sh /tmp/install-prosit.sh`. To choose the install directory, set `PROSIT_INSTALL_DIR`. Run as your normal user; sudo is not needed. Checksums detect damaged or mismatched downloads, using GitHub as the trusted source for both files.
 
 ## Prepare your account
 
-1. Open your Prosit server and sign in, or use a signup invitation from its administrator.
-2. In **Security**, create your encryption identity and save its encrypted recovery file and separate passphrase. If you already have an identity, unlock the existing vault or import its recovery file; do not replace it.
+1. Open your Prosit server and sign in with a passkey, or use a signup invitation to create one. Your browser/provider must support WebAuthn PRF for encrypted vault unlock.
+2. Add a backup passkey in **Security**, ideally with a second provider or security key. Existing users choose **Sign in with password to upgrade**, unlock their old vault once, then **Switch to passkeys**. If that browser has no old vault, use the browser that does or import the old recovery file once. Your encryption identity is preserved.
 3. In **Friends**, invite a friend and compare complete identity fingerprints through a trusted channel before verifying them.
 4. In **Circles**, choose which verified friends receive each kind of update. Members see the shared circle’s name and purpose; its owner manages membership and publishing.
 
-Unlock once to use all pages in the current tab. Explicitly locking, signing out, or reloading clears the unlocked keys. Only the encrypted vault is saved in your browser.
+Unlock once to use all pages in the current tab. Explicitly locking, signing out, or reloading clears the unlocked keys. Your encrypted vault is stored by Prosit and unlocked in the browser with your passkey. There are no JSON files to transfer. If you lose all registered passkeys, the encrypted vault cannot be recovered.
 
 ## Connect your agent
 
@@ -41,7 +41,7 @@ On headless Linux, supply a protected local passphrase file as described in the 
 
 1. Open the exact `/activate` URL and sign in to the requested account.
 2. Enter the verification code and choose **Review request**.
-3. Unlock your vault if needed. Compare and paste the complete fingerprint shown by your agent.
+3. Unlock your vault with your passkey if needed. Compare and paste the complete fingerprint shown by your agent.
 4. Choose read access, specific publishing circles, and access duration. Nothing is preselected. Click **Approve selected access** only for a request you started.
 5. Tell the agent to run `prosit auth resume` using its same profile and unlock option. No secret needs to be copied from the website.
 
