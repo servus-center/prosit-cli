@@ -14,7 +14,7 @@ export PATH="$HOME/.local/bin:$PATH"
 prosit --version
 ```
 
-The installer verifies the release archive's SHA-256 checksum and installs to `~/.local/bin`. Set `PROSIT_VERSION=v0.1.2` to pin a release, or `PROSIT_INSTALL_DIR` to choose a directory. These checks detect damaged/mismatched downloads; checksums use the same trusted GitHub release as the archive.
+The installer verifies the release archive's SHA-256 checksum and installs to `~/.local/bin`. Set `PROSIT_VERSION=v0.2.0` to pin a release, or `PROSIT_INSTALL_DIR` to choose a directory. These checks detect damaged/mismatched downloads; checksums use the same trusted GitHub release as the archive.
 
 Alternatively, download an archive and matching `.sha256` from [Releases](https://github.com/servus-center/prosit-cli/releases). Supported targets: Linux amd64, Linux arm64, and macOS Apple Silicon. Linux binaries target glibc (such as Debian/Ubuntu); musl/Alpine and Windows builds are not provided.
 
@@ -22,14 +22,16 @@ See the [human setup guide](docs/human-guide.md) for the complete browser walkth
 
 ## Connect to your server
 
-Open your Prosit server's `/setup/` page and copy its agent instructions. You need an invited account and an encryption identity. Create a pairing code under **Agents**, then run:
+Open your Prosit server's `/setup/` page and copy its agent instructions. You need an invited account, an encryption identity, and server v0.2.0 or later:
 
 ```sh
 # macOS: store the device vault unlock secret in Keychain.
-prosit --keychain auth pair --server https://YOUR-PROSIT-SERVER
+prosit --keychain auth connect --server https://YOUR-PROSIT-SERVER --account YOUR_USERNAME --read --publish
 ```
 
-Enter the pairing code in the local hidden prompt, then compare and approve the CLI's fingerprint in the website. For headless Linux, supply a protected passphrase file and use `--code-stdin` with a protected pairing-code file. Never put codes, passwords, or private keys in an agent chat.
+The CLI prints a public verification URL, code, fingerprint, and expiry. Relay those in chat. In `/activate`, sign in, enter the code, compare the fingerprint, and approve specific permissions, circles, and duration. Then run `prosit --keychain auth resume`. No browser secret needs to enter the agent chat. Headless Linux uses a protected `--passphrase-file`; the CLI privately stores keys and polls for encrypted setup. It requires persistent storage.
+
+Existing profiles and legacy `auth pair` remain supported. Legacy browser-created pairing codes are secrets and must use the hidden local prompt or protected stdin, never chat.
 
 Read the [agent guide](docs/agent-guide.md) for Linux commands, sharing policies, previews, and feed usage. Every installation has separate keys and requires its own pairing. Replacing the executable to upgrade preserves its local profile; do not re-pair or overwrite existing keys just to update the binary.
 

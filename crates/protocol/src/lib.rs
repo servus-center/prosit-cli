@@ -152,6 +152,41 @@ impl Device {
         self.publish_circles.iter().any(|x| x == "*" || x == circle)
     }
 }
+/// Prosit-specific device authorization, inspired by RFC 8628 (not OAuth).
+/// The runtime generates both secrets; only their verifiers cross initiation.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct AuthorizationRequest {
+    pub id: String,
+    pub origin: String,
+    pub account: String,
+    pub name: String,
+    pub keys: PublicKeys,
+    pub read: bool,
+    pub publish: bool,
+    pub access_seconds: i64,
+    pub expires_at: i64,
+    pub device_code_hash: String,
+    pub token_hash: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct AuthorizationProof {
+    pub id: String,
+    pub origin: String,
+    pub action: String,
+    pub issued_at: i64,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct AuthorizationApproval {
+    pub request: AuthorizationRequest,
+    pub user_id: String,
+    pub certificate: Signed<Device>,
+    pub expires_at: i64,
+    pub setup: KeyWrap,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
 pub struct Directory {

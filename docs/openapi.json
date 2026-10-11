@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Prosit API",
-    "version": "0.1.2",
+    "version": "0.2.0",
     "description": "Experimental protocol v1. TLS required outside explicit local development. See protocol.md for signatures, encryption, enrollment, and cursor semantics. Administrators cannot decrypt content."
   },
   "servers": [
@@ -1020,6 +1020,502 @@
               "type": "string"
             }
           },
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/device-authorizations": {
+      "post": {
+        "operationId": "post_api_v1_device_authorizations",
+        "summary": "Initiate a Prosit-specific browser authorization (not OAuth)",
+        "description": "Initiate a Prosit-specific browser authorization (not OAuth)",
+        "security": [],
+        "x-required-access": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "verification_uri": {
+                      "type": "string"
+                    },
+                    "user_code": {
+                      "type": "string"
+                    },
+                    "expires_at": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "interval": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  },
+                  "required": [
+                    "verification_uri",
+                    "user_code",
+                    "expires_at",
+                    "interval"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignedAuthorizationRequest"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/device-authorizations/lookup": {
+      "post": {
+        "operationId": "post_api_v1_device_authorizations_lookup",
+        "summary": "Look up a public code under its requested account without granting access",
+        "description": "Look up a public code under its requested account without granting access",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "request": {
+                      "$ref": "#/components/schemas/SignedAuthorizationRequest"
+                    },
+                    "fingerprint": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request",
+                    "fingerprint",
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_code": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "user_code"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/device-authorizations/approve": {
+      "post": {
+        "operationId": "post_api_v1_device_authorizations_approve",
+        "summary": "Approve exact signed request, selected scopes and encrypted setup",
+        "description": "Approve exact signed request, selected scopes and encrypted setup",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "approval": {
+                    "$ref": "#/components/schemas/SignedAuthorizationApproval"
+                  },
+                  "directory": {
+                    "$ref": "#/components/schemas/SignedDirectory"
+                  }
+                },
+                "required": [
+                  "approval",
+                  "directory"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/device-authorizations/deny": {
+      "post": {
+        "operationId": "post_api_v1_device_authorizations_deny",
+        "summary": "Deny a pending request bound to this account",
+        "description": "Deny a pending request bound to this account",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/device-authorizations/poll": {
+      "post": {
+        "operationId": "post_api_v1_device_authorizations_poll",
+        "summary": "Private runtime poll with device code and key possession proof",
+        "description": "Private runtime poll with device code and key possession proof",
+        "security": [
+          {
+            "authorizationDeviceCode": []
+          }
+        ],
+        "x-required-access": "authorization",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorizationStatus"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignedAuthorizationProof"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/device-authorizations/redeem": {
+      "post": {
+        "operationId": "post_api_v1_device_authorizations_redeem",
+        "summary": "Private runtime redeem with device code and key possession proof",
+        "description": "Private runtime redeem with device code and key possession proof",
+        "security": [
+          {
+            "authorizationDeviceCode": []
+          }
+        ],
+        "x-required-access": "authorization",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorizationStatus"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignedAuthorizationProof"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/device-authorizations/cancel": {
+      "post": {
+        "operationId": "post_api_v1_device_authorizations_cancel",
+        "summary": "Private runtime cancel with device code and key possession proof",
+        "description": "Private runtime cancel with device code and key possession proof",
+        "security": [
+          {
+            "authorizationDeviceCode": []
+          }
+        ],
+        "x-required-access": "authorization",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorizationStatus"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignedAuthorizationProof"
+              }
+            }
+          }
+        },
+        "parameters": [
           {
             "name": "X-Prosit-Request",
             "in": "header",
@@ -2839,6 +3335,11 @@
   },
   "components": {
     "securitySchemes": {
+      "authorizationDeviceCode": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Private runtime-only device code, combined with an initiating-key signature in the JSON body. Never place in chat, logs, or URLs."
+      },
       "session": {
         "type": "apiKey",
         "in": "cookie",
@@ -3661,6 +4162,223 @@
           "signature"
         ],
         "additionalProperties": false
+      },
+      "AuthorizationRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "origin": {
+            "type": "string"
+          },
+          "account": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "keys": {
+            "$ref": "#/components/schemas/PublicKeys"
+          },
+          "read": {
+            "type": "boolean"
+          },
+          "publish": {
+            "type": "boolean"
+          },
+          "access_seconds": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "expires_at": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "device_code_hash": {
+            "type": "string"
+          },
+          "token_hash": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "origin",
+          "account",
+          "name",
+          "keys",
+          "read",
+          "publish",
+          "access_seconds",
+          "expires_at",
+          "device_code_hash",
+          "token_hash"
+        ],
+        "additionalProperties": false
+      },
+      "AuthorizationProof": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "origin": {
+            "type": "string"
+          },
+          "action": {
+            "enum": [
+              "poll",
+              "redeem",
+              "cancel"
+            ]
+          },
+          "issued_at": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "id",
+          "origin",
+          "action",
+          "issued_at"
+        ],
+        "additionalProperties": false
+      },
+      "AuthorizationApproval": {
+        "type": "object",
+        "properties": {
+          "request": {
+            "$ref": "#/components/schemas/AuthorizationRequest"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "certificate": {
+            "$ref": "#/components/schemas/SignedDevice"
+          },
+          "expires_at": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "setup": {
+            "$ref": "#/components/schemas/KeyWrap"
+          }
+        },
+        "required": [
+          "request",
+          "user_id",
+          "certificate",
+          "expires_at",
+          "setup"
+        ],
+        "additionalProperties": false
+      },
+      "SignedAuthorizationRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AuthorizationRequest"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "data",
+          "signature"
+        ],
+        "additionalProperties": false
+      },
+      "SignedAuthorizationProof": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AuthorizationProof"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "data",
+          "signature"
+        ],
+        "additionalProperties": false
+      },
+      "SignedAuthorizationApproval": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AuthorizationApproval"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "data",
+          "signature"
+        ],
+        "additionalProperties": false
+      },
+      "AuthorizationStatus": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string"
+              },
+              "interval": {
+                "type": "integer",
+                "format": "int64"
+              }
+            },
+            "required": [
+              "status",
+              "interval"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "const": "approved"
+              },
+              "identity": {
+                "$ref": "#/components/schemas/SignedIdentity"
+              },
+              "approval": {
+                "$ref": "#/components/schemas/SignedAuthorizationApproval"
+              },
+              "directory": {
+                "$ref": "#/components/schemas/SignedDirectory"
+              }
+            },
+            "required": [
+              "status",
+              "identity",
+              "approval",
+              "directory"
+            ],
+            "additionalProperties": false
+          }
+        ]
       }
     }
   }

@@ -1,3 +1,5 @@
+mod authorization;
+
 use anyhow::{Context, Result, bail, ensure};
 use clap::{Parser, Subcommand};
 use prosit_protocol::*;
@@ -71,6 +73,29 @@ enum Command {
 }
 #[derive(Subcommand)]
 enum AuthCommand {
+    /// Start browser approval. Only the public verification instructions are printed.
+    Connect {
+        #[arg(long)]
+        server: String,
+        /// Exact Prosit login name; prevents approval under a different account.
+        #[arg(long)]
+        account: String,
+        #[arg(long, default_value = "Personal agent")]
+        name: String,
+        /// Request read access to shared updates.
+        #[arg(long)]
+        read: bool,
+        /// Ask the user to select publishing circles in the browser (none preselected).
+        #[arg(long)]
+        publish: bool,
+        #[arg(long, default_value_t = 86400)]
+        access_seconds: i64,
+        #[arg(long)]
+        allow_insecure_http: bool,
+    },
+    /// Cancel a browser authorization that has not been redeemed.
+    Cancel,
+
     Pair {
         #[arg(long)]
         server: String,
@@ -140,6 +165,8 @@ struct LocalState {
     root: Identity,
     metadata_key: Option<String>,
     pairing_id: Option<String>,
+    #[serde(default)]
+    authorization: Option<authorization::Pending>,
     certificate: Option<Signed<Device>>,
     #[serde(default)]
     policies: Vec<Policy>,
@@ -773,10 +800,18 @@ async fn run(args: Args) -> Result<Value> {
     let create = matches!(
         &args.command,
         Command::Auth {
-            command: AuthCommand::Pair { .. } | AuthCommand::Import { .. }
+            command: AuthCommand::Pair { .. }
+                | AuthCommand::Connect { .. }
+                | AuthCommand::Import { .. }
         }
     );
     let store = Store::open(&args, create)?;
+    if let Command::Auth {
+        command: AuthCommand::Connect { .. },
+    } = &args.command
+    {
+        return authorization::connect(&store, &args.command).await;
+    }
     if let Command::Auth {
         command: AuthCommand::Import { file },
     } = &args.command
@@ -834,6 +869,7 @@ async fn run(args: Args) -> Result<Value> {
             },
             metadata_key: None,
             pairing_id: None,
+            authorization: None,
             certificate: None,
             policies: vec![],
             pins: BTreeMap::new(),
@@ -861,9 +897,16 @@ async fn run(args: Args) -> Result<Value> {
     let mut state = store.load()?;
     match &args.command {
         Command::Auth { command } => match command {
-            AuthCommand::Resume { timeout } => complete_pairing(&store, &mut state, *timeout).await,
+            AuthCommand::Resume { timeout } => {
+                if state.authorization.is_some() {
+                    authorization::resume(&store, &mut state, *timeout).await
+                } else {
+                    complete_pairing(&store, &mut state, *timeout).await
+                }
+            }
+            AuthCommand::Cancel => authorization::cancel(&store, &mut state).await,
             AuthCommand::Status => Ok(
-                json!({"server":state.server,"user_id":state.user_id,"device_id":state.device_id,"paired":state.certificate.is_some(),"pending":state.pairing_id.is_some()}),
+                json!({"server":state.server,"user_id":state.user_id,"device_id":state.device_id,"paired":state.certificate.is_some() && state.authorization.is_none(),"pending":state.pairing_id.is_some() || state.authorization.is_some()}),
             ),
             AuthCommand::Logout => {
                 Api::new(&state)?
@@ -1048,6 +1091,7 @@ mod tests {
             root: root.clone(),
             metadata_key: None,
             pairing_id: None,
+            authorization: None,
             certificate: Some(author.clone()),
             policies: vec![],
             pins: BTreeMap::from([("bob".into(), bob_root.clone())]),

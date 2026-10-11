@@ -16,7 +16,7 @@ prosit --version
 
 Read the script before executing it. It downloads the matching archive from [public CLI releases](https://github.com/servus-center/prosit-cli/releases), verifies the SHA-256 checksum, and installs `prosit` to `~/.local/bin`. Add that directory to your shell’s PATH permanently if needed. You can download and check an archive manually from the same release page.
 
-To pin a release, run `PROSIT_VERSION=v0.1.2 sh /tmp/install-prosit.sh`. To choose the install directory, set `PROSIT_INSTALL_DIR`. Run as your normal user; sudo is not needed. Checksums detect damaged or mismatched downloads, using GitHub as the trusted source for both files.
+To pin a release, run `PROSIT_VERSION=v0.2.0 sh /tmp/install-prosit.sh`. To choose the install directory, set `PROSIT_INSTALL_DIR`. Run as your normal user; sudo is not needed. Checksums detect damaged or mismatched downloads, using GitHub as the trusted source for both files.
 
 ## Prepare your account
 
@@ -31,15 +31,25 @@ Unlock once to use all pages in the current tab. Explicitly locking, signing out
 
 Open **Agents** and use **Copy instructions for my agent**, or visit `/setup/` on your server. The copied prompt includes your server address and the public agent guide without account secrets.
 
-Create a pairing code in **Agents**. On macOS, run this command with your own server address:
+Ask your agent to start `prosit auth connect` with your exact server address and Prosit login name. On macOS:
 
 ```sh
-prosit --keychain auth pair --server https://YOUR-PROSIT-SERVER
+prosit --keychain auth connect --server https://YOUR-PROSIT-SERVER --account YOUR_USERNAME --read --publish
 ```
 
-Enter the code in the local hidden prompt. Refresh pairing requests on the website, compare the complete fingerprint displayed by the CLI, and approve only the intended read/publish permissions. On headless Linux, use the protected passphrase-file and pairing-code-file commands in the [agent guide](agent-guide.md).
+On headless Linux, supply a protected local passphrase file as described in the [agent guide](agent-guide.md). The agent returns a verification URL, short code, fingerprint, and expiry. You may share these public verification details in chat; they grant no access by themselves.
 
-Tell your agent which sources, event types, audiences, and expiry times you allow. Review an example and its recipients before approving a sharing policy. Passwords, pairing codes, and private keys belong in local prompts or protected files, never an agent chat.
+1. Open the exact `/activate` URL and sign in to the requested account.
+2. Enter the verification code and choose **Review request**.
+3. Unlock your vault if needed. Compare and paste the complete fingerprint shown by your agent.
+4. Choose read access, specific publishing circles, and access duration. Nothing is preselected. Click **Approve selected access** only for a request you started.
+5. Tell the agent to run `prosit auth resume` using its same profile and unlock option. No secret needs to be copied from the website.
+
+Deny an unfamiliar request. Requests expire after ten minutes; the runtime can use `auth cancel`. Interrupted setup can resume from its encrypted local profile. If an approved request expires before completion, remove the unredeemed device in **Agents** before starting over. Approved access lasts for the selected duration; connect a new device to renew access when it expires. Revoking a device stops service access immediately.
+
+Existing profiles do not need to be enrolled again after upgrading. Older CLIs can still use **Agents → Legacy pairing for older CLIs**, entering the browser-created secret in a hidden local prompt. That legacy code must never go in chat.
+
+Tell your agent which sources, event types, audiences, and expiry times you allow. Review an example and its recipients before approving a sharing policy or the first publication. Connection approval alone does not approve sharing. Passwords, API credentials, passphrases, and private keys stay in the browser or trusted runtime.
 
 ## Read updates and upgrade
 

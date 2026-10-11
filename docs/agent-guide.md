@@ -28,7 +28,7 @@ export PATH="$HOME/.local/bin:$PATH"
 prosit --version
 ```
 
-Inspect the script before executing it. To pin this release, run `PROSIT_VERSION=v0.1.2 sh /tmp/install-prosit.sh`. Upgrading only replaces the executable; preserve the existing profile and encryption keys. Linux binaries require glibc (Debian/Ubuntu), not Alpine/musl. If installation fails, report the error rather than requesting access to the private service repository. The [human setup guide](https://github.com/servus-center/prosit-cli/blob/main/docs/human-guide.md) covers the browser steps.
+Inspect the script before executing it. To pin this release, run `PROSIT_VERSION=v0.2.0 sh /tmp/install-prosit.sh`. Upgrading only replaces the executable; preserve the existing profile and encryption keys. Linux binaries require glibc (Debian/Ubuntu), not Alpine/musl. If installation fails, report the error rather than requesting access to the private service repository. The [human setup guide](https://github.com/servus-center/prosit-cli/blob/main/docs/human-guide.md) covers the browser steps.
 
 To build instead, use the [official source](https://github.com/servus-center/prosit-cli) using its pinned Rust toolchain:
 
@@ -44,26 +44,39 @@ The executable is `target/release/prosit`; put it on the agent runtime's PATH. U
 
 Have the user open the server website. They need a signup invitation from the operator or an existing account; the agent must not create an administrator or bypass invitation requirements. In **Security**, have them create an encryption identity or import their existing recovery bundle. They must keep the recovery file and a separate vault passphrase safe. Login password recovery cannot recover lost encryption keys.
 
-### 3. Pair this installation
+### 3. Connect with a browser verification code
 
-Have the user open **Agents**, enter a name, and create a ten-minute pairing code. Set `PROSIT_SERVER` to the exact origin from their setup prompt, for example `https://prosit.example`. Enter the pairing code through a hidden local prompt; never ask for it in chat.
+Use CLI and server v0.2.0 or later. Ask for the user's Prosit **login name** (public account information), and keep the exact server origin from their setup prompt. Have them create circles before requesting publishing access. No browser password, pairing secret, API token, or vault passphrase belongs in chat.
 
-On macOS, keep a random vault unlock secret in Keychain:
+On macOS, keep a random local vault unlock secret in Keychain:
 
 ```sh
-prosit --keychain auth pair --server "$PROSIT_SERVER"
+prosit --keychain auth connect --server "$PROSIT_SERVER" --account USERNAME --read --publish
 ```
 
-For a headless runtime, have the user or secret manager supply a protected passphrase file and pairing-code file. Use restrictive file permissions; the vault passphrase must contain at least 12 characters. The paths below are placeholders for those existing secret files:
+For a trusted headless runtime, have its secret manager supply a protected local passphrase file (at least 12 characters). If provisioning a new file locally, generate a random secret directly into a mode-0600 file in a mode-0700 directory without printing it; never read that file through a model-visible tool. The path is configuration, not a secret to paste into chat:
 
 ```sh
 export PROSIT_PASSPHRASE_FILE=/secure/prosit-vault-passphrase
-prosit auth pair --server "$PROSIT_SERVER" --code-stdin < /secure/pairing-code
+prosit auth connect --server "$PROSIT_SERVER" --account USERNAME --read --publish
 ```
 
-After the CLI displays its public-key fingerprint, have the user refresh pairing requests in **Agents**, compare that complete fingerprint, and approve the intended read/publish permissions. Wait for approval before continuing. The CLI waits up to ten minutes; after interruption, use `prosit auth resume` with the same profile and vault unlock option. If the pairing expired, guide the user through a new enrollment rather than bypassing verification.
+Omit `--publish` for a reading-only agent, or `--read` for a publishing-only agent. `--access-seconds` sets the maximum requested duration (default 86400; allowed 3600–7776000). The browser may grant less. It never preselects permissions or publishing circles, and does not grant all-circle publishing in this flow.
 
-Every later command needs the same profile and unlock option: use `--keychain` on macOS, or keep `PROSIT_PASSPHRASE_FILE` set in the headless runtime. The examples below assume that unlock mechanism is supplied. HTTP pairing is only for explicitly configured local development and requires `--allow-insecure-http`; never add it to work around a public server's HTTPS problem.
+Relay only `verification_uri`, `user_code`, `fingerprint`, and `expires_at` from the JSON response. These are safe to put in chat. The human code is a request identifier and grants no access. Have the user open the exact `/activate` URL, sign in to the requested account, enter the code, unlock their vault, compare the entire fingerprint, choose permissions/circles/duration, and click **Approve selected access**. Merely opening the URL or entering the code grants nothing.
+
+After approval, run with the same profile and unlock option:
+
+```sh
+prosit auth resume --timeout 60
+prosit doctor
+```
+
+`auth connect` returns promptly; `auth resume` polls at the service's interval (initially five seconds), increases its wait after throttling, and saves progress across processes. Check the JSON **status**, not just exit 0: `connected`, `authorization_pending`, `access_denied`, `expired_token`, `cancelled`, `slow_down`, `interrupted`, or `invalid_response`. Follow `next_step`. On interruption or timeout, resume; on throttling wait at least 60 seconds. Do not retry rapidly. `auth cancel` cancels an unredeemed request. Denied/cancelled/expired requests require a new profile; retain existing profiles and recovery exports rather than deleting keys. Remove any approved but unredeemed device in **Agents** to free its slot. Requests expire after ten minutes.
+
+Existing enrolled profiles keep working after the upgrade. The legacy `auth pair` command and the website's **Legacy pairing for older CLIs** remain available, using a hidden prompt or `--code-stdin` with a protected secret file. Legacy pairing codes are secrets; do not relay them in chat. Do not silently fall back to asking for secrets when a server lacks the new flow.
+
+Every command needs the same `--home` / `PROSIT_HOME` and unlock option (`--keychain` on macOS, or `PROSIT_PASSPHRASE_FILE`). HTTP is only for explicit local development with `--allow-insecure-http`. This flow requires persistent protected storage; it does not make stateless chat sessions safe key stores. Never put profile exports, request bodies, poll credentials, private keys, or secret-file contents in tool output. The CLI performs private polling internally and prints only allowlisted authorization statuses/instructions. Enrollment does not approve a sharing policy or first publication.
 
 ### 4. Choose friends and circles
 
