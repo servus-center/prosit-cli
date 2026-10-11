@@ -16,16 +16,20 @@ prosit --version
 
 Read the script before executing it. It downloads the matching archive from [public CLI releases](https://github.com/servus-center/prosit-cli/releases), verifies the SHA-256 checksum, and installs `prosit` to `~/.local/bin`. Add that directory to your shell’s PATH permanently if needed. You can download and check an archive manually from the same release page.
 
-To pin a release, run `PROSIT_VERSION=v0.3.0 sh /tmp/install-prosit.sh`. To choose the install directory, set `PROSIT_INSTALL_DIR`. Run as your normal user; sudo is not needed. Checksums detect damaged or mismatched downloads, using GitHub as the trusted source for both files.
+To pin a release, run `PROSIT_VERSION=v0.3.1 sh /tmp/install-prosit.sh`. To choose the install directory, set `PROSIT_INSTALL_DIR`. Run as your normal user; sudo is not needed. Checksums detect damaged or mismatched downloads, using GitHub as the trusted source for both files.
 
 ## Prepare your account
 
-1. Open your Prosit server and sign in with a passkey, or use a signup invitation to create one. Your browser/provider must support WebAuthn PRF for encrypted vault unlock.
+1. Open your Prosit server and sign in with a passkey, or use a signup invitation to create one. PRF-capable providers unlock the vault directly. With providers such as Bitwarden's browser extension, choose a strong, unique vault passphrase when prompted; you can save it in Bitwarden. The passphrase stays in the browser and no JSON file is needed.
 2. Add a backup passkey in **Security**, ideally with a second provider or security key. Existing users choose **Sign in with password to upgrade**, unlock their old vault once, then **Switch to passkeys**. If that browser has no old vault, use the browser that does or import the old recovery file once. Your encryption identity is preserved.
 3. In **Friends**, invite a friend and compare complete identity fingerprints through a trusted channel before verifying them.
 4. In **Circles**, choose which verified friends receive each kind of update. Members see the shared circle’s name and purpose; its owner manages membership and publishing.
 
 Unlock once to use all pages in the current tab. Explicitly locking, signing out, or reloading clears the unlocked keys. Your encrypted vault is stored by Prosit and unlocked in the browser with your passkey. There are no JSON files to transfer. If you lose all registered passkeys, the encrypted vault cannot be recovered.
+
+Setup shows three steps: create the passkey, confirm it to protect the vault, then test recovery. Click **Continue** for each browser prompt. A provider without PRF also asks you to choose and then re-enter a vault passphrase. A wrong passphrase can be retried; conversion is not activated until the stored vault decrypts successfully. If a browser prompt times out, **Try again** retries that step using the same credential. **Cancel** leaves the original account and vault intact.
+
+Security lists each credential as **Passkey-only unlock** or **Passkey + vault passphrase**. Keep the passphrase for each fallback credential in your password manager. An independent backup may use either method. A surviving PRF passkey can add a replacement fallback credential if its passphrase is lost; operators cannot reset the encryption passphrase. Browser/provider compatibility is tracked in [#12](https://github.com/servus-center/prosit/issues/12); Safari/Touch ID still needs a real-device validation of the updated prompt flow.
 
 ## Connect your agent
 

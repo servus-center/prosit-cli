@@ -332,8 +332,8 @@
     "/api/v1/auth/passkeys/register": {
       "post": {
         "operationId": "post_api_v1_auth_passkeys_register",
-        "summary": "Verify registration and request a PRF authentication",
-        "description": "Verify registration and request a PRF authentication",
+        "summary": "Verify registration and request passkey authentication",
+        "description": "use_passphrase defaults to false. When true, PRF is not requested in subsequent assertions and the staged wrap must use the fixed passphrase KDF. Passphrases are never sent to this API.",
         "security": [],
         "x-required-access": "public",
         "responses": {
@@ -392,6 +392,9 @@
                   },
                   "credential": {
                     "type": "object"
+                  },
+                  "use_passphrase": {
+                    "type": "boolean"
                   }
                 },
                 "required": [
@@ -850,13 +853,20 @@
                             "type": "null"
                           }
                         ]
+                      },
+                      "unlock_method": {
+                        "enum": [
+                          "prf",
+                          "passphrase"
+                        ]
                       }
                     },
                     "required": [
                       "id",
                       "name",
                       "created_at",
-                      "last_used"
+                      "last_used",
+                      "unlock_method"
                     ],
                     "additionalProperties": false
                   }
@@ -5168,6 +5178,10 @@
           },
           "blob": {
             "$ref": "#/components/schemas/CipherBlob"
+          },
+          "passphrase_kdf": {
+            "const": "pbkdf2-sha256-600000",
+            "description": "Present only for passphrase-based vault-key wrapping. prf_salt is then the 32-byte PBKDF2 salt. Omitting this field retains v0.3.0 PRF wrapping."
           }
         },
         "required": [

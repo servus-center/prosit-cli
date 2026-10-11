@@ -1113,7 +1113,7 @@ dependencies = [
 
 [[package]]
 name = "prosit-cli"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
@@ -1135,7 +1135,7 @@ dependencies = [
 
 [[package]]
 name = "prosit-protocol"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "aes-gcm",
  "anyhow",
