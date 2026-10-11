@@ -1,0 +1,75 @@
+{
+  "description": "Synthetic interoperability fixture. No real data.",
+  "root": {
+    "user_id": "alice",
+    "keys": {
+      "signing": "IwXRH2H76MsVBpHd6vokcs9xi-I7PZIq5Mh4z0xLsAU",
+      "encryption": "DGk5BrRifWfd5dfwALNSgzAKZMFahFzGWRpQqrGdtwQ"
+    }
+  },
+  "author": {
+    "data": {
+      "user_id": "alice",
+      "id": "alice-device",
+      "name": "fixture",
+      "keys": {
+        "signing": "_pxnV9AgVDzbKuEibm16BtCzk52a2RoPhrNay7csmJY",
+        "encryption": "nqHNpWMmhWbpbhJgFPAAodHyuCZLJb7XFpKccV4INBg"
+      },
+      "read": true,
+      "publish_circles": [
+        "*"
+      ],
+      "created_at": 1700000000
+    },
+    "signature": "KUIjmmAk2d4_hzqScI5nyTC3blwMrbov_-3U74_t2OhOd3mCQO6fT7ubnMPIPUyfdV1chtEg7Uru79xdREWNCg"
+  },
+  "sender": {
+    "signing": "l9XSoGHYDosqkOPK9Y3u_qfVj09PpcxKoAP4IUGBarE",
+    "encryption": "SaaiRmtKh1cMDpHIrewLB9N9Z_zc1n8K6suTtzDwmuA"
+  },
+  "receiver": {
+    "signing": "a8n1x7goR8on-CJZKhjgKYPLaAKKx0r-efyxFgPi4gE",
+    "encryption": "HTWGuFdstw7O9Mo7tLAL60BhwJJcU6ENQW0A0yDuSfA"
+  },
+  "event": {
+    "data": {
+      "header": {
+        "version": 1,
+        "id": "a52c178a-28bb-41eb-ad07-0dc9788c5a2b",
+        "actor_id": "alice",
+        "device_id": "alice-device",
+        "circle_id": "circle",
+        "audience_digest": "test-digest",
+        "expires_at": 1800000000,
+        "kind": "event",
+        "replaces": null
+      },
+      "payload": {
+        "nonce": "1Huu3AFp7Qnpn_2h",
+        "ciphertext": "Fo9xahv-ubConUPjrnzOPnlSt75-mUk-u6C7tDm4kMxuKjYDfC8b2YXbefmo7WBsAFJXo5xv08rOOFnXtAu0fWXTrf4IHdlfaVMUdh2Y6Bf3crsimA"
+      },
+      "recipients": {
+        "bob-device": {
+          "enc": "wC9bOoNO4Zyez1fPB4BQ0Zx6toYfpCgiLxY6ghRMCEM",
+          "ciphertext": "MLakJPrnhv7MeeF8QyWmJt0cxl6M7jxjUQAOVplgQfIpompJV2PRd2AeKr91RtwF"
+        }
+      }
+    },
+    "signature": "GAom711BiIKbiwcW118qBBxEcdCTGEmFPmNIkEmWw5mNAJztw4TimXafWYXcqctFE-Xwc3r5yb82Iou8cp6dDg"
+  },
+  "plaintext": {
+    "summary": "Hello, friends — Grüße!",
+    "type": "status",
+    "number": 42
+  },
+  "vault": {
+    "version": 1,
+    "iterations": 600000,
+    "salt": "LZ54q1Q74RqtkY5K9t9B2g",
+    "blob": {
+      "nonce": "4XQKYq5yoC9xO2sf",
+      "ciphertext": "rlhxZNN1OamWMsr-dEGswtYWvnP-R-dm2oLCCHIosZ0"
+    }
+  }
+}

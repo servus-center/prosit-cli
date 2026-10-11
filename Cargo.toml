@@ -1,0 +1,28 @@
+[workspace]
+members = ["crates/protocol", "crates/cli"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.1"
+edition = "2024"
+rust-version = "1.94"
+
+[workspace.dependencies]
+anyhow = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_jcs = "0.1"
+base64 = "0.22"
+sha2 = "0.10"
+rand = "0.9"
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+clap = { version = "4", features = ["derive", "env"] }
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+zeroize = { version = "1", features = ["derive"] }
+prosit-protocol = { path = "crates/protocol" }
+
+[profile.release]
+lto = "thin"
+strip = "debuginfo"

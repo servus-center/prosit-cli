@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "id": "close-friends-activities",
+  "circles": ["REPLACE_WITH_CIRCLE_ID"],
+  "event_types": ["status", "activity", "availability"],
+  "source_kinds": ["user_statement"],
+  "max_ttl_seconds": 86400,
+  "allow_location": false,
+  "approved": false
+}

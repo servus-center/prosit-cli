@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "logical_event_id": "REPLACE_WITH_UNIQUE_EVENT_ID",
+  "type": "activity",
+  "actor_id": "REPLACE_WITH_USER_ID",
+  "observed_at": "REPLACE_WITH_CURRENT_RFC3339_TIMESTAMP",
+  "expires_at": "REPLACE_WITH_EXPIRY_RFC3339_TIMESTAMP",
+  "summary": "Free for a beer this evening",
+  "source": { "kind": "user_statement", "basis": "explicit" }
+}

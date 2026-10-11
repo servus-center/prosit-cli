@@ -1,0 +1,3667 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Prosit API",
+    "version": "0.1.1",
+    "description": "Experimental protocol v1. TLS required outside explicit local development. See protocol.md for signatures, encryption, enrollment, and cursor semantics. Administrators cannot decrypt content."
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "paths": {
+    "/health/live": {
+      "get": {
+        "operationId": "get_health_live",
+        "summary": "Process liveness",
+        "description": "Process liveness",
+        "security": [],
+        "x-required-access": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "get_health_ready",
+        "summary": "Database readiness",
+        "description": "Database readiness",
+        "security": [],
+        "x-required-access": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/servus.json": {
+      "get": {
+        "operationId": "get__well_known_servus_json",
+        "summary": "Version and capability discovery",
+        "description": "Version and capability discovery",
+        "security": [],
+        "x-required-access": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "post_api_v1_auth_login",
+        "summary": "Start a 12-hour HttpOnly web session",
+        "description": "Start a 12-hour HttpOnly web session",
+        "security": [],
+        "x-required-access": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "operationId": "post_api_v1_auth_register",
+        "summary": "Redeem one single-use seven-day administrator invitation",
+        "description": "Redeem one single-use seven-day administrator invitation",
+        "security": [],
+        "x-required-access": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Register"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "post_api_v1_auth_logout",
+        "summary": "Revoke current session and clear cookie",
+        "description": "Revoke current session and clear cookie",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "deviceToken": []
+          }
+        ],
+        "x-required-access": "either",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "operationId": "get_api_v1_me",
+        "summary": "Current account and signed identity",
+        "description": "Current account and signed identity",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "deviceToken": []
+          }
+        ],
+        "x-required-access": "either",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete_api_v1_me",
+        "summary": "Delete own account; protects the last administrator",
+        "description": "Delete own account; protects the last administrator",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string"
+                  },
+                  "confirm_username": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "password",
+                  "confirm_username"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/me/password": {
+      "put": {
+        "operationId": "put_api_v1_me_password",
+        "summary": "Change login password and revoke other web sessions",
+        "description": "Change login password and revoke other web sessions",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "current_password": {
+                    "type": "string"
+                  },
+                  "new_password": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "current_password",
+                  "new_password"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/me/paused": {
+      "put": {
+        "operationId": "put_api_v1_me_paused",
+        "summary": "Pause or resume all account publication",
+        "description": "Pause or resume all account publication",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "paused": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "paused"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/me/identity": {
+      "put": {
+        "operationId": "put_api_v1_me_identity",
+        "summary": "Initialize immutable root identity and empty directory",
+        "description": "Initialize immutable root identity and empty directory",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdentitySetup"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/me/sessions": {
+      "delete": {
+        "operationId": "delete_api_v1_me_sessions",
+        "summary": "Revoke every web session, including current",
+        "description": "Revoke every web session, including current",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/me/audit": {
+      "get": {
+        "operationId": "get_api_v1_me_audit",
+        "summary": "Most recent 100 account audit entries",
+        "description": "Most recent 100 account audit entries",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "type": "string"
+                      },
+                      "target_id": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "created_at": {
+                        "type": "integer",
+                        "format": "int64"
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "target_id",
+                      "created_at"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/users": {
+      "get": {
+        "operationId": "get_api_v1_admin_users",
+        "summary": "List up to 1000 accounts",
+        "description": "List up to 1000 accounts",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "username": {
+                        "type": "string"
+                      },
+                      "role": {
+                        "type": "string"
+                      },
+                      "disabled": {
+                        "type": "boolean"
+                      },
+                      "created_at": {
+                        "type": "integer",
+                        "format": "int64"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "username",
+                      "role",
+                      "disabled",
+                      "created_at"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/users/{id}": {
+      "put": {
+        "operationId": "put_api_v1_admin_users__id_",
+        "summary": "Disable or enable a member; disabling revokes all credentials",
+        "description": "Disable or enable a member; disabling revokes all credentials",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "admin",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "disabled": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "disabled"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/invitations": {
+      "post": {
+        "operationId": "post_api_v1_admin_invitations",
+        "summary": "Issue one single-use signup code",
+        "description": "Issue one single-use signup code",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "expires_at": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "expires_at"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      },
+      "get": {
+        "operationId": "get_api_v1_admin_invitations",
+        "summary": "List recent signup invitation status without raw codes",
+        "description": "List recent signup invitation status without raw codes",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "expires_at": {
+                        "type": "integer",
+                        "format": "int64"
+                      },
+                      "used": {
+                        "type": "boolean"
+                      },
+                      "created_at": {
+                        "type": "integer",
+                        "format": "int64"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "expires_at",
+                      "used",
+                      "created_at"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/invitations/{hash}": {
+      "delete": {
+        "operationId": "delete_api_v1_admin_invitations__hash_",
+        "summary": "Revoke signup invitation",
+        "description": "Revoke signup invitation",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "admin",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "hash",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/pairings": {
+      "post": {
+        "operationId": "post_api_v1_pairings",
+        "summary": "Create a ten-minute pairing code",
+        "description": "Create a ten-minute pairing code",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "expires_at": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "code",
+                    "name",
+                    "expires_at"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      },
+      "get": {
+        "operationId": "get_api_v1_pairings",
+        "summary": "List own pending and approved pairing requests",
+        "description": "List own pending and approved pairing requests",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "request": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/components/schemas/PairingRequest"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "expires_at": {
+                        "type": "integer",
+                        "format": "int64"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "status",
+                      "request",
+                      "expires_at"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pairings/claim": {
+      "post": {
+        "operationId": "post_api_v1_pairings_claim",
+        "summary": "Claim code with locally generated public keys and token verifier",
+        "description": "Claim code with locally generated public keys and token verifier",
+        "security": [],
+        "x-required-access": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "user_id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "identity": {
+                      "$ref": "#/components/schemas/SignedIdentity"
+                    },
+                    "fingerprint": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "user_id",
+                    "name",
+                    "identity",
+                    "fingerprint"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PairingClaim"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/pairings/{id}": {
+      "get": {
+        "operationId": "get_api_v1_pairings__id_",
+        "summary": "Poll using the provisional bearer credential",
+        "description": "Poll using the provisional bearer credential",
+        "security": [
+          {
+            "deviceToken": []
+          }
+        ],
+        "x-required-access": "device",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PairingStatus"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "delete_api_v1_pairings__id_",
+        "summary": "Cancel a not-yet-approved pairing",
+        "description": "Cancel a not-yet-approved pairing",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/devices": {
+      "get": {
+        "operationId": "get_api_v1_devices",
+        "summary": "Own signed directory and activity state",
+        "description": "Own signed directory and activity state",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "deviceToken": []
+          }
+        ],
+        "x-required-access": "either",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "directory": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/components/schemas/SignedDirectory"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "status": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "paused": {
+                            "type": "boolean"
+                          },
+                          "last_seen": {
+                            "anyOf": [
+                              {
+                                "type": "integer",
+                                "format": "int64"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "paused",
+                          "last_seen"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "directory",
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices/{id}/paused": {
+      "put": {
+        "operationId": "put_api_v1_devices__id__paused",
+        "summary": "Pause or resume one device publication",
+        "description": "Pause or resume one device publication",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "paused": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "paused"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/devices/directory": {
+      "put": {
+        "operationId": "put_api_v1_devices_directory",
+        "summary": "Approve enrollment or revoke omitted devices with root signature; reserved web reader uses root keys and grants no bearer token",
+        "description": "Approve enrollment or revoke omitted devices with root signature; reserved web reader uses root keys and grants no bearer token",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DirectoryUpdate"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/tokens/current": {
+      "delete": {
+        "operationId": "delete_api_v1_tokens_current",
+        "summary": "Revoke the presented credential",
+        "description": "Revoke the presented credential",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "deviceToken": []
+          }
+        ],
+        "x-required-access": "either",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/friend-invitations": {
+      "post": {
+        "operationId": "post_api_v1_friend_invitations",
+        "summary": "Create a single-use seven-day friend invitation",
+        "description": "Create a single-use seven-day friend invitation",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "expires_at": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "code",
+                    "expires_at"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      },
+      "get": {
+        "operationId": "get_api_v1_friend_invitations",
+        "summary": "List own friend invitation status",
+        "description": "List own friend invitation status",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "expires_at": {
+                        "type": "integer",
+                        "format": "int64"
+                      },
+                      "used": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "expires_at",
+                      "used"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/friend-invitations/accept": {
+      "post": {
+        "operationId": "post_api_v1_friend_invitations_accept",
+        "summary": "Create a mutual friendship; verification is still required",
+        "description": "Create a mutual friendship; verification is still required",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "friend_id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "friend_id"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "code"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/friend-invitations/{id}": {
+      "delete": {
+        "operationId": "delete_api_v1_friend_invitations__id_",
+        "summary": "Revoke own friend invitation",
+        "description": "Revoke own friend invitation",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/friends": {
+      "get": {
+        "operationId": "get_api_v1_friends",
+        "summary": "List friends, signed trust pins, and blocked accounts",
+        "description": "List friends, signed trust pins, and blocked accounts",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "deviceToken": []
+          }
+        ],
+        "x-required-access": "either",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "friends": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Friend"
+                      }
+                    },
+                    "blocks": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "username": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "username"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "friends",
+                    "blocks"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/friends/{id}/verify": {
+      "put": {
+        "operationId": "put_api_v1_friends__id__verify",
+        "summary": "Pin friend identity after external fingerprint comparison",
+        "description": "Pin friend identity after external fingerprint comparison",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignedTrust"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/friends/{id}": {
+      "delete": {
+        "operationId": "delete_api_v1_friends__id_",
+        "summary": "Remove mutual friendship and optionally block; freeze affected circles",
+        "description": "Remove mutual friendship and optionally block; freeze affected circles",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "block": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "block"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/blocks/{id}": {
+      "delete": {
+        "operationId": "delete_api_v1_blocks__id_",
+        "summary": "Unblock account; does not recreate friendship",
+        "description": "Unblock account; does not recreate friendship",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/circles": {
+      "get": {
+        "operationId": "get_api_v1_circles",
+        "summary": "List own encrypted circles and review status",
+        "description": "List own encrypted circles and review status",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "deviceToken": []
+          }
+        ],
+        "x-required-access": "either",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CircleRecord"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_api_v1_circles",
+        "summary": "Create or replace a circle at the next signed revision",
+        "description": "Create or replace a circle at the next signed revision",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignedCircle"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/circles/shared": {
+      "get": {
+        "operationId": "get_api_v1_circles_shared",
+        "summary": "List circles shared with this account by current friends",
+        "description": "List circles shared with this account by current friends",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "deviceToken": []
+          }
+        ],
+        "x-required-access": "either",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CircleRecord"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_api_v1_circles_shared",
+        "summary": "Atomically save circle and separately encrypted member-visible metadata",
+        "description": "Atomically save circle and separately encrypted member-visible metadata",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "circle": {
+                    "$ref": "#/components/schemas/SignedCircle"
+                  },
+                  "sharing": {
+                    "$ref": "#/components/schemas/SignedSharedMetadata"
+                  }
+                },
+                "required": [
+                  "circle",
+                  "sharing"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/circles/{id}": {
+      "delete": {
+        "operationId": "delete_api_v1_circles__id_",
+        "summary": "Delete own circle and stop its friend delivery",
+        "description": "Delete own circle and stop its friend delivery",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/circles/{id}/audience": {
+      "get": {
+        "operationId": "get_api_v1_circles__id__audience",
+        "summary": "Load current signed publication audience",
+        "description": "Load current signed publication audience",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "deviceToken": []
+          }
+        ],
+        "x-required-access": "either",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Audience"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/events": {
+      "post": {
+        "operationId": "post_api_v1_events",
+        "summary": "Accept a signed encrypted event or withdrawal",
+        "description": "Accept a signed encrypted event or withdrawal",
+        "security": [
+          {
+            "deviceToken": []
+          }
+        ],
+        "x-required-access": "device",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "sequence": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "duplicate": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "sequence",
+                    "duplicate"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignedEnvelope"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Must equal the signed header.id. Persist original bytes before upload."
+          }
+        ]
+      }
+    },
+    "/api/v1/events/{id}": {
+      "delete": {
+        "operationId": "delete_api_v1_events__id_",
+        "summary": "Delete own stored event; use a signed withdrawal to update caches",
+        "description": "Delete own stored event; use a signed withdrawal to update caches",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
+    "/api/v1/friends/feed": {
+      "get": {
+        "operationId": "get_api_v1_friends_feed",
+        "summary": "Retrieve authorized encrypted feed; web feed is newest first and includes own legacy ciphertext",
+        "description": "Retrieve authorized encrypted feed; web feed is newest first and includes own legacy ciphertext",
+        "security": [
+          {
+            "deviceToken": []
+          }
+        ],
+        "x-required-access": "device",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          },
+          {
+            "name": "friend",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "circle",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/users/{id}/feed.servus": {
+      "get": {
+        "operationId": "get_api_v1_users__id__feed_servus",
+        "summary": "Retrieve authorized encrypted feed; web feed is newest first and includes own legacy ciphertext",
+        "description": "Retrieve authorized encrypted feed; web feed is newest first and includes own legacy ciphertext",
+        "security": [
+          {
+            "deviceToken": []
+          }
+        ],
+        "x-required-access": "device",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          },
+          {
+            "name": "circle",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/me/feed": {
+      "get": {
+        "operationId": "get_api_v1_me_feed",
+        "summary": "Retrieve authorized encrypted feed; web feed is newest first and includes own legacy ciphertext",
+        "description": "Retrieve authorized encrypted feed; web feed is newest first and includes own legacy ciphertext",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          },
+          {
+            "name": "friend",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "circle",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "session": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "prosit_session",
+        "description": "Management session issued by login. Agent credentials cannot perform management actions."
+      },
+      "deviceToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Device-specific opaque API credential; read/publish scopes are bound to its signed certificate. Provisional tokens only poll their pairing."
+      }
+    },
+    "schemas": {
+      "PublicKeys": {
+        "type": "object",
+        "properties": {
+          "signing": {
+            "type": "string"
+          },
+          "encryption": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "signing",
+          "encryption"
+        ],
+        "additionalProperties": false
+      },
+      "Identity": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "keys": {
+            "$ref": "#/components/schemas/PublicKeys"
+          }
+        },
+        "required": [
+          "user_id",
+          "keys"
+        ],
+        "additionalProperties": false
+      },
+      "Device": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "keys": {
+            "$ref": "#/components/schemas/PublicKeys"
+          },
+          "read": {
+            "type": "boolean"
+          },
+          "publish_circles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "created_at": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "user_id",
+          "id",
+          "name",
+          "keys",
+          "read",
+          "publish_circles",
+          "created_at"
+        ],
+        "additionalProperties": false
+      },
+      "Directory": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "devices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SignedDevice"
+            }
+          }
+        },
+        "required": [
+          "user_id",
+          "revision",
+          "devices"
+        ],
+        "additionalProperties": false
+      },
+      "Trust": {
+        "type": "object",
+        "properties": {
+          "owner_id": {
+            "type": "string"
+          },
+          "friend": {
+            "$ref": "#/components/schemas/Identity"
+          }
+        },
+        "required": [
+          "owner_id",
+          "friend"
+        ],
+        "additionalProperties": false
+      },
+      "CipherBlob": {
+        "type": "object",
+        "properties": {
+          "nonce": {
+            "type": "string"
+          },
+          "ciphertext": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "nonce",
+          "ciphertext"
+        ],
+        "additionalProperties": false
+      },
+      "KeyWrap": {
+        "type": "object",
+        "properties": {
+          "enc": {
+            "type": "string"
+          },
+          "ciphertext": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "enc",
+          "ciphertext"
+        ],
+        "additionalProperties": false
+      },
+      "Circle": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "owner_id": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identity"
+            }
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/CipherBlob"
+          }
+        },
+        "required": [
+          "id",
+          "owner_id",
+          "revision",
+          "members",
+          "metadata"
+        ],
+        "additionalProperties": false
+      },
+      "Header": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "actor_id": {
+            "type": "string"
+          },
+          "device_id": {
+            "type": "string"
+          },
+          "circle_id": {
+            "type": "string"
+          },
+          "audience_digest": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "kind": {
+            "enum": [
+              "event",
+              "withdrawal"
+            ]
+          },
+          "replaces": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "id",
+          "actor_id",
+          "device_id",
+          "circle_id",
+          "audience_digest",
+          "expires_at",
+          "kind",
+          "replaces"
+        ],
+        "additionalProperties": false
+      },
+      "Envelope": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "$ref": "#/components/schemas/Header"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/CipherBlob"
+          },
+          "recipients": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/KeyWrap"
+            },
+            "minProperties": 1,
+            "maxProperties": 606
+          }
+        },
+        "required": [
+          "header",
+          "payload",
+          "recipients"
+        ],
+        "additionalProperties": false
+      },
+      "Audience": {
+        "type": "object",
+        "properties": {
+          "circle": {
+            "$ref": "#/components/schemas/SignedCircle"
+          },
+          "directories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SignedDirectory"
+            }
+          },
+          "roots": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identity"
+            }
+          },
+          "digest": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "circle",
+          "directories",
+          "roots",
+          "digest"
+        ],
+        "additionalProperties": false
+      },
+      "FeedItem": {
+        "type": "object",
+        "properties": {
+          "sequence": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "event": {
+            "$ref": "#/components/schemas/SignedEnvelope"
+          },
+          "author": {
+            "$ref": "#/components/schemas/SignedDevice"
+          },
+          "root": {
+            "$ref": "#/components/schemas/Identity"
+          }
+        },
+        "required": [
+          "sequence",
+          "event",
+          "author",
+          "root"
+        ],
+        "additionalProperties": false
+      },
+      "FeedPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FeedItem"
+            }
+          },
+          "cursor": {
+            "type": "string"
+          },
+          "has_more": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "items",
+          "cursor",
+          "has_more"
+        ],
+        "additionalProperties": false
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "admin",
+              "member"
+            ]
+          },
+          "disabled": {
+            "type": "boolean"
+          },
+          "paused": {
+            "type": "boolean"
+          },
+          "identity": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SignedIdentity"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "directory": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SignedDirectory"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "role",
+          "disabled",
+          "paused",
+          "identity",
+          "directory"
+        ],
+        "additionalProperties": false
+      },
+      "Friend": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "disabled": {
+            "type": "boolean"
+          },
+          "identity": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SignedIdentity"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "directory": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SignedDirectory"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "trust": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SignedTrust"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "disabled",
+          "identity",
+          "directory",
+          "trust"
+        ],
+        "additionalProperties": false
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "additionalProperties": false
+      },
+      "Login": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ],
+        "additionalProperties": false
+      },
+      "Register": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 12,
+            "writeOnly": true
+          },
+          "code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password",
+          "code"
+        ],
+        "additionalProperties": false
+      },
+      "IdentitySetup": {
+        "type": "object",
+        "properties": {
+          "identity": {
+            "$ref": "#/components/schemas/SignedIdentity"
+          },
+          "directory": {
+            "$ref": "#/components/schemas/SignedDirectory"
+          }
+        },
+        "required": [
+          "identity",
+          "directory"
+        ],
+        "additionalProperties": false
+      },
+      "DirectoryUpdate": {
+        "type": "object",
+        "properties": {
+          "directory": {
+            "$ref": "#/components/schemas/SignedDirectory"
+          },
+          "pairing_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "setup": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KeyWrap"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "directory",
+          "pairing_id",
+          "setup"
+        ],
+        "additionalProperties": false
+      },
+      "PairingClaim": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "device_id": {
+            "type": "string"
+          },
+          "keys": {
+            "$ref": "#/components/schemas/PublicKeys"
+          },
+          "token_hash": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "device_id",
+          "keys",
+          "token_hash"
+        ],
+        "additionalProperties": false
+      },
+      "PairingRequest": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string"
+          },
+          "keys": {
+            "$ref": "#/components/schemas/PublicKeys"
+          }
+        },
+        "required": [
+          "device_id",
+          "keys"
+        ],
+        "additionalProperties": false
+      },
+      "PairingStatus": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "waiting",
+              "claimed",
+              "approved"
+            ]
+          },
+          "setup": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KeyWrap"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "identity": {
+            "$ref": "#/components/schemas/SignedIdentity"
+          },
+          "directory": {
+            "$ref": "#/components/schemas/SignedDirectory"
+          }
+        },
+        "required": [
+          "status",
+          "setup",
+          "user_id",
+          "identity",
+          "directory"
+        ],
+        "additionalProperties": false
+      },
+      "SharedMetadata": {
+        "type": "object",
+        "properties": {
+          "circle_id": {
+            "type": "string"
+          },
+          "owner_id": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/CipherBlob"
+          },
+          "recipients": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/KeyWrap"
+            },
+            "maxProperties": 101
+          }
+        },
+        "required": [
+          "circle_id",
+          "owner_id",
+          "revision",
+          "payload",
+          "recipients"
+        ],
+        "additionalProperties": false
+      },
+      "SignedSharedMetadata": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/SharedMetadata"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "data",
+          "signature"
+        ],
+        "additionalProperties": false
+      },
+      "CircleRecord": {
+        "type": "object",
+        "properties": {
+          "circle": {
+            "$ref": "#/components/schemas/SignedCircle"
+          },
+          "needs_review": {
+            "type": "boolean"
+          },
+          "owner_username": {
+            "type": "string"
+          },
+          "sharing": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SignedSharedMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "circle",
+          "needs_review",
+          "owner_username",
+          "sharing"
+        ],
+        "additionalProperties": false
+      },
+      "SignedIdentity": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Identity"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "data",
+          "signature"
+        ],
+        "additionalProperties": false
+      },
+      "SignedDevice": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Device"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "data",
+          "signature"
+        ],
+        "additionalProperties": false
+      },
+      "SignedDirectory": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Directory"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "data",
+          "signature"
+        ],
+        "additionalProperties": false
+      },
+      "SignedTrust": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Trust"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "data",
+          "signature"
+        ],
+        "additionalProperties": false
+      },
+      "SignedCircle": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Circle"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "data",
+          "signature"
+        ],
+        "additionalProperties": false
+      },
+      "SignedEnvelope": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Envelope"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "data",
+          "signature"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}

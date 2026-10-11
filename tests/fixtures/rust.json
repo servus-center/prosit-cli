@@ -1,0 +1,87 @@
+{
+  "author": {
+    "data": {
+      "created_at": 1700000000,
+      "id": "alice-device",
+      "keys": {
+        "encryption": "B-qPgfMVzVLQEedgto8XbXhJXlSD7-RfhGuLi0Pswms",
+        "signing": "WBzMPSXrZVyW2RzQjaPmcOrw5vOuNsetipIYt8H10WI"
+      },
+      "name": "fixture",
+      "publish_circles": [
+        "*"
+      ],
+      "read": true,
+      "user_id": "alice"
+    },
+    "signature": "IJnNvpIs0njTV4MSs7WolvKUltcPNFrRS-RJvKgFXm4BiwqFEe9qeB6MVQeRM7qVpostZq9ziu7_BO1PBEA7Ag"
+  },
+  "description": "Synthetic interoperability fixture. These private keys have never protected real data.",
+  "event": {
+    "data": {
+      "header": {
+        "actor_id": "alice",
+        "audience_digest": "test-digest",
+        "circle_id": "circle",
+        "device_id": "alice-device",
+        "expires_at": 1800000000,
+        "id": "a52c178a-28bb-41eb-ad07-0dc9788c5a2a",
+        "kind": "event",
+        "replaces": null,
+        "version": 1
+      },
+      "payload": {
+        "ciphertext": "t60mtqANKYzyjxINKn4Hev__0d8mQf6tcsoFulK1fSLT6bSzgTnDkeooqEVNZtuXRxLxsdccGuhCOzIajF6hUXruw9U4HeaW7AZE1WzfFS-zj5Shmg",
+        "nonce": "Aajjaw8eOBmD2tyD"
+      },
+      "recipients": {
+        "bob-device": {
+          "ciphertext": "gR1G8t-HMK3FKcLBEjmugzvRQQvDhkXr9nUFV2uYLthEkz39MNirwptQ99gj3Lge",
+          "enc": "VJ1Tlsh27C6w-cL9eY0A0CUWVhIA8jv4WauofAGUwB8"
+        }
+      }
+    },
+    "signature": "1zmDYEMuMoq1TbJwnq1x5WIEi3yMIvPem2g6hyMWTL0MGsTCHnPiqaanNglcHekYzR4ZRu1F7GEUcGQMt95GAw"
+  },
+  "plaintext": {
+    "number": 42,
+    "summary": "Hello, friends — Grüße!",
+    "type": "status"
+  },
+  "receiver": {
+    "encryption": "V6apspz-bnwnIOeVIxdc3HUgGfs2mWiY9_MYQRO1HyQ",
+    "signing": "gvbvLb02iY_ZqKwo3PVAulNjHTp9W2Z7cUB1YVmnklw"
+  },
+  "recipient": {
+    "created_at": 1700000000,
+    "id": "bob-device",
+    "keys": {
+      "encryption": "VJM3QC-1ebknKRj8ACz4rV2jHszZB6yqye7V-0rFwmE",
+      "signing": "pd2HEDTDpaqCu9rsVm1IHGzEKyhNfLLS6kN9QHr3Ris"
+    },
+    "name": "fixture",
+    "publish_circles": [],
+    "read": true,
+    "user_id": "bob"
+  },
+  "root": {
+    "keys": {
+      "encryption": "K9CULBdcQuHbDea2yzd6HhPo_RD28TkOacD39J4PoHU",
+      "signing": "bkMp-cuKtMpiM9MjeCDnBPGylvpxDQj1uM4f9ddIlxQ"
+    },
+    "user_id": "alice"
+  },
+  "sender": {
+    "encryption": "ayhHr--2Ga6WvLARoETrLWVIR_eKtvYQrgXzc1fSe_U",
+    "signing": "uBBfIAydcDBwqkp_vyN-Hr4wge8d6AMnd_wLd233Kbw"
+  },
+  "vault": {
+    "blob": {
+      "ciphertext": "xmiIswwO7OrN1SyqWPqBpMgILeYKfgf4H_vt_Yjfayc",
+      "nonce": "4QYgTB4Wceu2Ucxx"
+    },
+    "iterations": 600000,
+    "salt": "xXfunb9asvJFVrOHuX7nQw",
+    "version": 1
+  }
+}
