@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Prosit API",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "Experimental protocol v1. TLS required outside explicit local development. See protocol.md for signatures, encryption, enrollment, and cursor semantics. Administrators cannot decrypt content."
   },
   "servers": [

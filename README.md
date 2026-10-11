@@ -14,7 +14,7 @@ export PATH="$HOME/.local/bin:$PATH"
 prosit --version
 ```
 
-The installer verifies the release archive's SHA-256 checksum and installs to `~/.local/bin`. Set `PROSIT_VERSION=v0.2.0` to pin a release, or `PROSIT_INSTALL_DIR` to choose a directory. These checks detect damaged/mismatched downloads; checksums use the same trusted GitHub release as the archive.
+The installer verifies the release archive's SHA-256 checksum and installs to `~/.local/bin`. Set `PROSIT_VERSION=v0.2.1` to pin a release, or `PROSIT_INSTALL_DIR` to choose a directory. These checks detect damaged/mismatched downloads; checksums use the same trusted GitHub release as the archive.
 
 Alternatively, download an archive and matching `.sha256` from [Releases](https://github.com/servus-center/prosit-cli/releases). Supported targets: Linux amd64, Linux arm64, and macOS Apple Silicon. Linux binaries target glibc (such as Debian/Ubuntu); musl/Alpine and Windows builds are not provided.
 
@@ -22,7 +22,7 @@ See the [human setup guide](docs/human-guide.md) for the complete browser walkth
 
 ## Connect to your server
 
-Open your Prosit server's `/setup/` page and copy its agent instructions. You need an invited account, an encryption identity, and server v0.2.0 or later:
+Open your Prosit server's `/setup/` page and copy its agent instructions. You need an invited account, an encryption identity, and server v0.2.1 or later:
 
 ```sh
 # macOS: store the device vault unlock secret in Keychain.

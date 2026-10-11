@@ -10,7 +10,7 @@ case "$version" in
   v[0-9]*)
     case "$version" in *[!a-zA-Z0-9.-]*) echo "Invalid PROSIT_VERSION" >&2; exit 1;; esac
     base="$repository/releases/download/$version" ;;
-  *) echo "Use PROSIT_VERSION=latest or a release tag such as v0.2.0" >&2; exit 1 ;;
+  *) echo "Use PROSIT_VERSION=latest or a release tag such as v0.2.1" >&2; exit 1 ;;
 esac
 case "$(uname -s):$(uname -m)" in
   Linux:x86_64|Linux:amd64) target=x86_64-unknown-linux-gnu ;;

@@ -265,18 +265,41 @@ pub async fn resume(store: &Store, state: &mut LocalState, timeout: u64) -> Resu
     loop {
         let p = state.authorization.as_ref().unwrap();
         if p.prepared {
+            // The request row may have been purged after a lost redemption
+            // acknowledgement. Its absence must not strand an active profile.
+            match Api::new(state)?.get("/api/v1/me").await {
+                Ok(user) if user["id"] == state.user_id => {
+                    state.authorization = None;
+                    store.save(state)?;
+                    return Ok(terminal("connected"));
+                }
+                Ok(_) => return Ok(terminal("invalid_response")),
+                Err(error)
+                    if error
+                        .downcast_ref::<RemoteError>()
+                        .is_some_and(|e| e.status == 401) => {}
+                Err(error) => return Ok(network_status(&error)),
+            }
+            if p.request.data.expires_at <= now() {
+                return Ok(terminal("expired_token"));
+            }
             let response = match runtime(state, "redeem").await {
                 Ok(v) => v,
                 Err(e) => return Ok(network_status(&e)),
             };
             if matches!(response["status"].as_str(), Some("connected" | "redeemed")) {
                 // 'redeemed' handles a lost acknowledgement, without issuing a second credential.
-                if !Api::new(state)?
-                    .get("/api/v1/me")
-                    .await
-                    .is_ok_and(|v| v["id"] == state.user_id)
-                {
-                    return Ok(terminal("interrupted"));
+                match Api::new(state)?.get("/api/v1/me").await {
+                    Ok(user) if user["id"] == state.user_id => {}
+                    Ok(_) => return Ok(terminal("invalid_response")),
+                    Err(error)
+                        if error
+                            .downcast_ref::<RemoteError>()
+                            .is_some_and(|e| e.status == 401) =>
+                    {
+                        return Ok(terminal("access_denied"));
+                    }
+                    Err(error) => return Ok(network_status(&error)),
                 }
                 state.authorization = None;
                 store.save(state)?;

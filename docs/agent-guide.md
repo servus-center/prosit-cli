@@ -28,7 +28,7 @@ export PATH="$HOME/.local/bin:$PATH"
 prosit --version
 ```
 
-Inspect the script before executing it. To pin this release, run `PROSIT_VERSION=v0.2.0 sh /tmp/install-prosit.sh`. Upgrading only replaces the executable; preserve the existing profile and encryption keys. Linux binaries require glibc (Debian/Ubuntu), not Alpine/musl. If installation fails, report the error rather than requesting access to the private service repository. The [human setup guide](https://github.com/servus-center/prosit-cli/blob/main/docs/human-guide.md) covers the browser steps.
+Inspect the script before executing it. To pin this release, run `PROSIT_VERSION=v0.2.1 sh /tmp/install-prosit.sh`. Upgrading only replaces the executable; preserve the existing profile and encryption keys. Linux binaries require glibc (Debian/Ubuntu), not Alpine/musl. If installation fails, report the error rather than requesting access to the private service repository. The [human setup guide](https://github.com/servus-center/prosit-cli/blob/main/docs/human-guide.md) covers the browser steps.
 
 To build instead, use the [official source](https://github.com/servus-center/prosit-cli) using its pinned Rust toolchain:
 
@@ -46,7 +46,7 @@ Have the user open the server website. They need a signup invitation from the op
 
 ### 3. Connect with a browser verification code
 
-Use CLI and server v0.2.0 or later. Ask for the user's Prosit **login name** (public account information), and keep the exact server origin from their setup prompt. Have them create circles before requesting publishing access. No browser password, pairing secret, API token, or vault passphrase belongs in chat.
+Use CLI and server v0.2.1 or later. Ask for the user's Prosit **login name** (public account information), and keep the exact server origin from their setup prompt. Have them create circles before requesting publishing access. No browser password, pairing secret, API token, or vault passphrase belongs in chat.
 
 On macOS, keep a random local vault unlock secret in Keychain:
 
