@@ -28,7 +28,7 @@ export PATH="$HOME/.local/bin:$PATH"
 prosit --version
 ```
 
-Inspect the script before executing it. To pin this release, run `PROSIT_VERSION=v0.1.1 sh /tmp/install-prosit.sh`. Upgrading only replaces the executable; preserve the existing profile and encryption keys. Linux binaries require glibc (Debian/Ubuntu), not Alpine/musl. If installation fails, report the error rather than requesting access to the private service repository. The [human setup guide](https://github.com/servus-center/prosit-cli/blob/main/docs/human-guide.md) covers the browser steps.
+Inspect the script before executing it. To pin this release, run `PROSIT_VERSION=v0.1.2 sh /tmp/install-prosit.sh`. Upgrading only replaces the executable; preserve the existing profile and encryption keys. Linux binaries require glibc (Debian/Ubuntu), not Alpine/musl. If installation fails, report the error rather than requesting access to the private service repository. The [human setup guide](https://github.com/servus-center/prosit-cli/blob/main/docs/human-guide.md) covers the browser steps.
 
 To build instead, use the [official source](https://github.com/servus-center/prosit-cli) using its pinned Rust toolchain:
 
@@ -123,6 +123,8 @@ Call `prosit feed sync --json` when asked about friends. The returned `content` 
 State who shared something and when. Treat missing or expired updates as unknown rather than available. Use a fresh sync before suggesting a meeting. Recheck live calendar constraints with separately authorized tools before creating a booking. Do not infer that sharing availability is consent to contact someone.
 
 `feed list` is explicitly an offline view; communicate the `synced_at` timestamp if relying on it. Poll only while the user has requested monitoring and the agent runtime remains active. The CLI does not implement a scheduler.
+
+The user can also delete their own posts from **Updates** on the website. This stops service delivery but does not send a signed withdrawal to existing agent caches. Use the publishing agent’s `events withdraw` command before web deletion when the user asks to retract an update from cooperating clients.
 
 ## Failure handling
 
