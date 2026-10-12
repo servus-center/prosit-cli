@@ -16,13 +16,13 @@ prosit --version
 
 Read the script before executing it. It downloads the matching archive from [public CLI releases](https://github.com/servus-center/prosit-cli/releases), verifies the SHA-256 checksum, and installs `prosit` to `~/.local/bin`. Add that directory to your shell’s PATH permanently if needed. You can download and check an archive manually from the same release page.
 
-To pin a release, run `PROSIT_VERSION=v0.3.1 sh /tmp/install-prosit.sh`. To choose the install directory, set `PROSIT_INSTALL_DIR`. Run as your normal user; sudo is not needed. Checksums detect damaged or mismatched downloads, using GitHub as the trusted source for both files.
+To pin a release, run `PROSIT_VERSION=v0.3.3 sh /tmp/install-prosit.sh`. To choose the install directory, set `PROSIT_INSTALL_DIR`. Run as your normal user; sudo is not needed. Checksums detect damaged or mismatched downloads, using GitHub as the trusted source for both files.
 
 ## Prepare your account
 
 1. Open your Prosit server and sign in with a passkey, or use a signup invitation to create one. PRF-capable providers unlock the vault directly. With providers such as Bitwarden's browser extension, choose a strong, unique vault passphrase when prompted; you can save it in Bitwarden. The passphrase stays in the browser and no JSON file is needed.
 2. Add a backup passkey in **Security**, ideally with a second provider or security key. Existing users choose **Sign in with password to upgrade**, unlock their old vault once, then **Switch to passkeys**. If that browser has no old vault, use the browser that does or import the old recovery file once. Your encryption identity is preserved.
-3. In **Friends**, invite a friend and compare complete identity fingerprints through a trusted channel before verifying them.
+3. In **Friends**, invite a friend. Opening the link starts **Add friend**: sign in, review the inviter and your signed-in account, unlock or set up your identity if prompted, then choose **Add friend**. The invitation stays in this tab through sign-in, unlock, and refresh. Signing in or opening a link never accepts it; **Cancel invitation** dismisses it without accepting. A friend link does not create an account; new members need a separate administrator signup invitation. After confirmation, **View friend in Friends** opens the new connection. Compare complete identity fingerprints through a trusted channel before verifying them; acceptance alone grants neither verification nor circle access.
 4. In **Circles**, choose which verified friends receive each kind of update. Members see the shared circle’s name and purpose; its owner manages membership and publishing.
 
 Unlock once to use all pages in the current tab. Explicitly locking, signing out, or reloading clears the unlocked keys. Your encrypted vault is stored by Prosit and unlocked in the browser with your passkey. There are no JSON files to transfer. If you lose all registered passkeys, the encrypted vault cannot be recovered.

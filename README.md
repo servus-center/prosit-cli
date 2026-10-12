@@ -14,7 +14,7 @@ export PATH="$HOME/.local/bin:$PATH"
 prosit --version
 ```
 
-The installer verifies the release archive's SHA-256 checksum and installs to `~/.local/bin`. Set `PROSIT_VERSION=v0.3.1` to pin a release, or `PROSIT_INSTALL_DIR` to choose a directory. These checks detect damaged/mismatched downloads; checksums use the same trusted GitHub release as the archive.
+The installer verifies the release archive's SHA-256 checksum and installs to `~/.local/bin`. Set `PROSIT_VERSION=v0.3.3` to pin a release, or `PROSIT_INSTALL_DIR` to choose a directory. These checks detect damaged/mismatched downloads; checksums use the same trusted GitHub release as the archive.
 
 Alternatively, download an archive and matching `.sha256` from [Releases](https://github.com/servus-center/prosit-cli/releases). Supported targets: Linux amd64, Linux arm64, and macOS Apple Silicon. Linux binaries target glibc (such as Debian/Ubuntu); musl/Alpine and Windows builds are not provided.
 

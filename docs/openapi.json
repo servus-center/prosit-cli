@@ -3022,6 +3022,115 @@
         }
       }
     },
+    "/api/v1/friend-invitations/preview": {
+      "post": {
+        "operationId": "post_api_v1_friend_invitations_preview",
+        "summary": "Review an invitation without accepting it; requires a management session, not an initialized identity",
+        "description": "Invalid, expired, revoked, blocked, and disabled-inviter links return unavailable. Used links expose no inviter unless the recipient is already a friend or is the inviter. No friendship, trust pin, or circle membership is created. Send the code in the body, never a URL.",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "enum": [
+                        "available",
+                        "self",
+                        "already_friends",
+                        "used",
+                        "unavailable"
+                      ]
+                    },
+                    "inviter": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "username": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "username"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "inviter"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "code"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          }
+        ]
+      }
+    },
     "/api/v1/friend-invitations/accept": {
       "post": {
         "operationId": "post_api_v1_friend_invitations_accept",
