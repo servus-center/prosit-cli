@@ -4567,6 +4567,15 @@
               },
               "message": {
                 "type": "string"
+              },
+              "retry_after_seconds": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "For rate_limited responses, seconds until the blocking window expires; matches Retry-After."
+              },
+              "rate_limit_scope": {
+                "type": "string",
+                "description": "For rate_limited responses, the limiter category only; never an account ID, IP, or credential."
               }
             },
             "required": [

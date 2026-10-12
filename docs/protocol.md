@@ -87,6 +87,8 @@ Protocol limits: 16 KiB canonical plaintext, 256 KiB canonical signed envelope, 
 
 Business errors are `{error: {code, message}}`: 400 invalid request, 401 missing/expired credentials, 403 scope/CSRF/pause denial, 404 inaccessible resource, 409 conflict or stale audience, 410 expired cursor, 429 rate limit with Retry-After, 500 internal database error. Framework body/query parsing and body-size failures may return text; clients must not assume every non-2xx response has JSON. Never include plaintext or secrets in diagnostics.
 
+For `rate_limited`, the error also includes `retry_after_seconds` (the remaining window, matching the `Retry-After` header) and `rate_limit_scope` (the limiter category, without account, address, or credential identifiers). Passkey requests with a verified web session use a 30/minute/account budget. Other passkey requests use a separate 30/minute/peer-IP budget; neither shares the legacy login/device-authorization peer budget. Existing conversion-password (10/5 minutes/account), enrollment-start (10/10 minutes/account name), and passkey-login (30/5 minutes/account name) limits still apply. A rejected request does not extend the blocking window.
+
 ## Vault and fixtures
 
 A vault is `{version: 1, iterations: 600000, salt, blob}`. Derive 32 bytes with PBKDF2-HMAC-SHA256 from the UTF-8 passphrase and a fresh random 16-byte salt. Encrypt UTF-8 JSON with AES-256-GCM using AAD exactly UTF-8 `prosit:vault:v1` (no NUL). `blob` uses the same nonce/ciphertext format as above. Reject unknown versions/iteration counts. Browser and CLI vault payloads differ; an account root recovery file is not an agent recovery file.
