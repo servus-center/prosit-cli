@@ -14,7 +14,7 @@ export PATH="$HOME/.local/bin:$PATH"
 prosit --version
 ```
 
-The installer verifies the release archive's SHA-256 checksum and installs to `~/.local/bin`. Set `PROSIT_VERSION=v0.3.3` to pin a release, or `PROSIT_INSTALL_DIR` to choose a directory. These checks detect damaged/mismatched downloads; checksums use the same trusted GitHub release as the archive.
+The installer verifies the release archive's SHA-256 checksum and installs to `~/.local/bin`. Set `PROSIT_VERSION=v0.4.0` to pin a release, or `PROSIT_INSTALL_DIR` to choose a directory. These checks detect damaged/mismatched downloads; checksums use the same trusted GitHub release as the archive.
 
 Alternatively, download an archive and matching `.sha256` from [Releases](https://github.com/servus-center/prosit-cli/releases). Supported targets: Linux amd64, Linux arm64, and macOS Apple Silicon. Linux binaries target glibc (such as Debian/Ubuntu); musl/Alpine and Windows builds are not provided.
 
@@ -49,3 +49,5 @@ cargo build --locked --release -p prosit-cli
 ## Releases
 
 Push a `v*` tag to run native Linux amd64/arm64 and macOS arm64 builds. The workflow runs tests and attaches the archives and checksums to a public GitHub release. Version numbers track the service's compatible releases; no Docker images are built here.
+
+Personal updates from Prosit v0.4.0 are readable with CLI v0.4.0 or later. Feed entries expose verified `authorship: "human" | "agent"` separately from untrusted decrypted content. A source field or agent name cannot establish human authorship. Upgrading preserves existing agent profiles and keys.

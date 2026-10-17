@@ -673,11 +673,19 @@ fn decode_cache(state: &LocalState, cache: &Cache, friend: Option<&str>) -> Resu
                 && timestamp(&value["expires_at"])? == h.expires_at,
             "Decrypted payload disagrees with signed header"
         );
-        decoded.push((h, value));
+        decoded.push((
+            h,
+            value,
+            if item.author.data.is_human(root) {
+                "human"
+            } else {
+                "agent"
+            },
+        ));
     }
     let mut logical = std::collections::BTreeSet::new();
     let mut output = Vec::new();
-    for (h, value) in decoded.into_iter().rev() {
+    for (h, value, authorship) in decoded.into_iter().rev() {
         if withdrawn.contains(&(h.actor_id.clone(), h.circle_id.clone(), h.id.clone()))
             || friend.is_some_and(|f| f != h.actor_id)
         {
@@ -689,7 +697,7 @@ fn decode_cache(state: &LocalState, cache: &Cache, friend: Option<&str>) -> Resu
         if !logical.insert((h.actor_id.clone(), logical_id.to_owned())) {
             continue;
         }
-        output.push(json!({"event_id":h.id,"actor_id":h.actor_id,"circle_id":h.circle_id,"untrusted_content":true,"content":value}));
+        output.push(json!({"event_id":h.id,"actor_id":h.actor_id,"circle_id":h.circle_id,"authorship":authorship,"untrusted_content":true,"content":value}));
     }
     Ok(output)
 }

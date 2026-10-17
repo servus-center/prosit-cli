@@ -16,7 +16,7 @@ prosit --version
 
 Read the script before executing it. It downloads the matching archive from [public CLI releases](https://github.com/servus-center/prosit-cli/releases), verifies the SHA-256 checksum, and installs `prosit` to `~/.local/bin`. Add that directory to your shell’s PATH permanently if needed. You can download and check an archive manually from the same release page.
 
-To pin a release, run `PROSIT_VERSION=v0.3.3 sh /tmp/install-prosit.sh`. To choose the install directory, set `PROSIT_INSTALL_DIR`. Run as your normal user; sudo is not needed. Checksums detect damaged or mismatched downloads, using GitHub as the trusted source for both files.
+To pin a release, run `PROSIT_VERSION=v0.4.0 sh /tmp/install-prosit.sh`. To choose the install directory, set `PROSIT_INSTALL_DIR`. Run as your normal user; sudo is not needed. Checksums detect damaged or mismatched downloads, using GitHub as the trusted source for both files.
 
 ## Prepare your account
 

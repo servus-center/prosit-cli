@@ -148,6 +148,16 @@ pub struct Device {
     pub created_at: i64,
 }
 impl Device {
+    /// Human posts use the account root key through its reserved vault recipient.
+    /// A device name or plaintext source field never establishes human authorship.
+    pub fn is_human(&self, root: &Identity) -> bool {
+        self.user_id == root.user_id
+            && self.id == format!("web:{}", root.user_id)
+            && self.keys == root.keys
+            && self.read
+            && self.publish_circles.is_empty()
+            && self.name == "Web vault"
+    }
     pub fn can_publish(&self, circle: &str) -> bool {
         self.publish_circles.iter().any(|x| x == "*" || x == circle)
     }
@@ -410,7 +420,7 @@ pub fn open_event(
         "wrong sender"
     );
     ensure!(
-        author.data.can_publish(&h.circle_id),
+        author.data.can_publish(&h.circle_id) || author.data.is_human(root),
         "publisher lacks circle capability"
     );
     verify("event", event, &author.data.keys.signing)?;

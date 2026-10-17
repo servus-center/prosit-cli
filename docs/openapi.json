@@ -3924,6 +3924,94 @@
         ]
       }
     },
+    "/api/v1/me/events": {
+      "post": {
+        "operationId": "post_api_v1_me_events",
+        "summary": "Publish a personal encrypted update using the root-key web vault certificate",
+        "description": "Management session only. Requires the reserved web:<user_id> certificate with root keys, read=true and no agent publishing scopes. Human attribution comes from the verified certificate, never from payload fields. Same audience, expiry, pause and replay checks as agent publishing.",
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "x-required-access": "web",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "sequence": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "duplicate": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "sequence",
+                    "duplicate"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Business errors use JSON Error; framework parsing/body-limit failures can use text. See protocol.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignedEnvelope"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Prosit-Request",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "const": "1"
+            },
+            "description": "Required CSRF guard. Browser Origin must equal the configured origin."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Must equal the signed header.id; retry identical encrypted bytes after transport failures."
+          }
+        ]
+      }
+    },
     "/api/v1/events/{id}": {
       "delete": {
         "operationId": "delete_api_v1_events__id_",
